@@ -1,7 +1,7 @@
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Droplet, UserCircle, Fuel, ArrowRight } from "lucide-react";
+import { Droplet, UserCircle, Fuel, ArrowRight, ShieldCheck } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { useEffect } from "react";
 
@@ -73,6 +73,13 @@ export default function Landing() {
             </Button>
           </CardContent>
         </Card>
+      </div>
+
+      <div className="mt-10 animate-in fade-in duration-700 delay-300">
+        <Link href="/admin/login" className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
+          <ShieldCheck className="w-3.5 h-3.5" />
+          Admin Portal
+        </Link>
       </div>
     </div>
   );
