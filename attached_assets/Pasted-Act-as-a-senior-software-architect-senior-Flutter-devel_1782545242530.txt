@@ -1,0 +1,535 @@
+Act as a senior software architect, senior Flutter developer, senior Laravel backend developer, senior UI/UX designer, database architect, DevOps engineer, QA engineer, and security expert.
+
+Build a complete production-ready Fuel Delivery Platform for Islamabad, Pakistan.
+
+The project must be enterprise-grade, scalable, secure, clean, modern, responsive, and follow Clean Architecture, SOLID principles, Repository Pattern, MVC, REST API standards, and best coding practices.
+
+Do not generate demo code, placeholders, fake logic, incomplete features, or TODO comments.
+
+Everything must be fully functional.
+
+====================================
+PROJECT NAME
+====================================
+
+FuelGo Islamabad
+
+====================================
+TARGET
+====================================
+
+Islamabad only.
+
+Only registered petrol pumps can sell fuel.
+
+Customers can order fuel from nearby petrol pumps.
+
+Every petrol pump has its own delivery riders.
+
+There is NO separate rider application.
+
+The petrol pump manages its own riders internally.
+
+When delivery is completed, the petrol pump owner manually changes the order status to Delivered.
+
+No OTP confirmation is required.
+
+====================================
+TECH STACK
+====================================
+
+Frontend:
+Flutter Latest Stable
+
+Backend:
+Laravel Latest Stable
+
+Database:
+MySQL
+
+Maps:
+Google Maps API
+
+Authentication:
+Firebase Phone Authentication (OTP only for login)
+
+Push Notifications:
+Firebase Cloud Messaging
+
+Storage:
+Laravel Storage
+
+State Management:
+Riverpod
+
+Networking:
+Dio
+
+Admin Dashboard:
+React + Laravel API
+
+====================================
+APPLICATION START
+====================================
+
+When the application opens,
+
+show a beautiful animated splash screen.
+
+After splash,
+
+display two large cards:
+
+1. Petrol Pump Owner
+
+2. Customer
+
+Each card contains:
+
+Icon
+
+Image
+
+Description
+
+Register Button
+
+Login Button
+
+The user selects one option.
+
+Both user types have completely separate registration, login, dashboard, and permissions.
+
+====================================
+CUSTOMER REGISTRATION
+====================================
+
+Fields:
+
+Full Name
+
+Phone Number
+
+Email (Optional)
+
+Password
+
+Confirm Password
+
+Current Location
+
+Profile Picture
+
+After registration,
+
+redirect to Customer Dashboard.
+
+====================================
+PETROL PUMP REGISTRATION
+====================================
+
+Fields:
+
+Business Name
+
+Owner Name
+
+Phone Number
+
+Email
+
+Password
+
+Confirm Password
+
+CNIC
+
+Petrol Pump License
+
+Business Registration Number
+
+Google Map Location
+
+Business Address
+
+Operating Hours
+
+Delivery Radius
+
+Delivery Charges
+
+Upload Pump Images
+
+Logo
+
+After registration,
+
+Admin approval required.
+
+Until approval,
+
+dashboard shows:
+
+"Waiting for Approval"
+
+====================================
+CUSTOMER DASHBOARD
+====================================
+
+Modern Material 3 UI
+
+Bottom Navigation
+
+Home
+
+Orders
+
+Favorites
+
+Profile
+
+Home Screen:
+
+Current Location
+
+Google Map
+
+Nearby Petrol Pumps
+
+Search
+
+Categories
+
+Fuel Prices
+
+Featured Pumps
+
+Offers
+
+Recommended Pumps
+
+====================================
+CUSTOMER FEATURES
+====================================
+
+Search Petrol Pumps
+
+Google Maps Navigation
+
+Nearby Pumps
+
+Fuel Types
+
+Petrol
+
+Diesel
+
+Hi-Octane
+
+Quantity Selector
+
+Delivery Address
+
+Notes
+
+Estimated Price
+
+Delivery Charges
+
+Total Price
+
+Cash on Delivery
+
+Future Online Payment
+
+Order History
+
+Favorite Pumps
+
+Ratings
+
+Reviews
+
+Profile Management
+
+Notifications
+
+====================================
+PETROL PUMP DASHBOARD
+====================================
+
+Statistics
+
+Today's Orders
+
+Pending Orders
+
+Completed Orders
+
+Cancelled Orders
+
+Revenue
+
+Recent Orders
+
+Quick Actions
+
+====================================
+PETROL PUMP FEATURES
+====================================
+
+Manage Fuel Prices
+
+Manage Fuel Availability
+
+Manage Delivery Charges
+
+Manage Business Hours
+
+Manage Orders
+
+Accept Order
+
+Reject Order
+
+Preparing
+
+Out For Delivery
+
+Delivered
+
+Cancelled
+
+Customer Details
+
+Order History
+
+Sales Report
+
+Profile
+
+====================================
+ORDER FLOW
+====================================
+
+Customer places order.
+
+↓
+
+Petrol Pump receives order.
+
+↓
+
+Accept / Reject.
+
+↓
+
+Preparing.
+
+↓
+
+Out For Delivery.
+
+↓
+
+Delivered.
+
+↓
+
+Completed.
+
+====================================
+ADMIN PANEL
+====================================
+
+Secure Admin Login
+
+Dashboard
+
+Approve Petrol Pumps
+
+Reject Petrol Pumps
+
+Manage Users
+
+Manage Pumps
+
+Manage Orders
+
+Reports
+
+Revenue
+
+Analytics
+
+Notifications
+
+Complaints
+
+Settings
+
+====================================
+DATABASE
+====================================
+
+Design normalized relational database.
+
+Create all migrations.
+
+Create foreign keys.
+
+Create indexes.
+
+Create seeders.
+
+Create factories.
+
+====================================
+API
+====================================
+
+Create complete REST APIs.
+
+Authentication
+
+Users
+
+Pumps
+
+Orders
+
+Fuel
+
+Notifications
+
+Reviews
+
+Settings
+
+Profile
+
+====================================
+SECURITY
+====================================
+
+JWT
+
+Role Based Access
+
+Validation
+
+Rate Limiting
+
+Sanitization
+
+Encryption
+
+Secure Storage
+
+====================================
+NOTIFICATIONS
+====================================
+
+New Order
+
+Order Accepted
+
+Order Rejected
+
+Out For Delivery
+
+Delivered
+
+Cancelled
+
+====================================
+UI DESIGN
+====================================
+
+Material Design 3
+
+Premium
+
+Modern
+
+Rounded Cards
+
+Soft Shadows
+
+Professional Icons
+
+Beautiful Animations
+
+Responsive Layout
+
+Dark Mode
+
+Light Mode
+
+Excellent UX
+
+====================================
+CODE QUALITY
+====================================
+
+No duplicated code.
+
+Reusable widgets.
+
+Reusable components.
+
+Well documented.
+
+Scalable architecture.
+
+Proper folder structure.
+
+Separate Models.
+
+Separate Controllers.
+
+Separate Services.
+
+Separate Repositories.
+
+Proper validation.
+
+Error handling.
+
+Logging.
+
+====================================
+OUTPUT
+====================================
+
+Generate the entire project step by step.
+
+Start with:
+
+1. Complete folder structure
+
+2. Database schema
+
+3. Backend APIs
+
+4. Flutter UI
+
+5. Authentication
+
+6. Customer Module
+
+7. Petrol Pump Module
+
+8. Admin Panel
+
+9. Notifications
+
+10. Testing
+
+11. Deployment
+
+Do not skip any module.
+
+Every screen must be fully functional.
+
+Generate production-ready code only.

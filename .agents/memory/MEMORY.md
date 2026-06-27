@@ -1,0 +1,1 @@
+- [api-client-react subpath exports](api-client-subpath.md) — setAuthTokenGetter must be imported from the main package barrel, not a /custom-fetch subpath

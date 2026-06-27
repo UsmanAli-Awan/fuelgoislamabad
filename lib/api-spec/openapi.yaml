@@ -1,22 +1,35 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: FuelGo Islamabad - Fuel Delivery Platform API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: auth
+    description: Authentication operations
+  - name: users
+    description: User management
+  - name: pumps
+    description: Petrol pump management
+  - name: orders
+    description: Order management
+  - name: fuel
+    description: Fuel types and prices
+  - name: reviews
+    description: Ratings and reviews
+  - name: admin
+    description: Admin panel operations
+
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +37,723 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  # ─── AUTH ───────────────────────────────────────────────────────────────────
+  /auth/register/customer:
+    post:
+      operationId: registerCustomer
+      tags: [auth]
+      summary: Register a new customer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CustomerRegistration"
+      responses:
+        "201":
+          description: Customer registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Phone number already registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/register/pump:
+    post:
+      operationId: registerPump
+      tags: [auth]
+      summary: Register a new petrol pump owner
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PumpRegistration"
+      responses:
+        "201":
+          description: Pump owner registered (pending admin approval)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Phone number already registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/login:
+    post:
+      operationId: login
+      tags: [auth]
+      summary: Login (customer or pump owner)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginCredentials"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get current authenticated user profile
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/logout:
+    post:
+      operationId: logout
+      tags: [auth]
+      summary: Logout current user
+      responses:
+        "200":
+          description: Logged out
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  # ─── CUSTOMERS ──────────────────────────────────────────────────────────────
+  /customers/profile:
+    patch:
+      operationId: updateCustomerProfile
+      tags: [users]
+      summary: Update customer profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CustomerProfileUpdate"
+      responses:
+        "200":
+          description: Profile updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Customer"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /customers/favorites:
+    get:
+      operationId: getCustomerFavorites
+      tags: [users]
+      summary: Get customer favorite pumps
+      responses:
+        "200":
+          description: Favorite pumps list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PetrolPump"
+    post:
+      operationId: addFavoritePump
+      tags: [users]
+      summary: Add a pump to favorites
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FavoriteInput"
+      responses:
+        "201":
+          description: Added to favorites
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /customers/favorites/{pumpId}:
+    delete:
+      operationId: removeFavoritePump
+      tags: [users]
+      summary: Remove a pump from favorites
+      parameters:
+        - name: pumpId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Removed from favorites
+
+  # ─── PUMPS ──────────────────────────────────────────────────────────────────
+  /pumps:
+    get:
+      operationId: listPumps
+      tags: [pumps]
+      summary: List all approved petrol pumps
+      parameters:
+        - name: lat
+          in: query
+          schema:
+            type: number
+        - name: lng
+          in: query
+          schema:
+            type: number
+        - name: radius
+          in: query
+          schema:
+            type: number
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: fuelType
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Pumps list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PetrolPump"
+
+  /pumps/{id}:
+    get:
+      operationId: getPump
+      tags: [pumps]
+      summary: Get petrol pump details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Pump details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PetrolPump"
+        "404":
+          description: Pump not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /pumps/my:
+    get:
+      operationId: getMyPump
+      tags: [pumps]
+      summary: Get authenticated pump owner's pump profile
+      responses:
+        "200":
+          description: Own pump details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PetrolPump"
+        "404":
+          description: No pump found for this owner
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    patch:
+      operationId: updateMyPump
+      tags: [pumps]
+      summary: Update authenticated pump owner's pump profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PumpProfileUpdate"
+      responses:
+        "200":
+          description: Pump updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PetrolPump"
+
+  /pumps/my/stats:
+    get:
+      operationId: getMyPumpStats
+      tags: [pumps]
+      summary: Get pump dashboard stats (today's orders, revenue, status breakdown)
+      responses:
+        "200":
+          description: Pump statistics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PumpStats"
+
+  # ─── FUEL ───────────────────────────────────────────────────────────────────
+  /pumps/{pumpId}/fuel:
+    get:
+      operationId: getPumpFuelPrices
+      tags: [fuel]
+      summary: Get fuel types and prices for a pump
+      parameters:
+        - name: pumpId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Fuel prices list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FuelPrice"
+
+    put:
+      operationId: updatePumpFuelPrices
+      tags: [fuel]
+      summary: Update fuel prices for own pump (pump owner only)
+      parameters:
+        - name: pumpId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FuelPricesUpdate"
+      responses:
+        "200":
+          description: Fuel prices updated
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FuelPrice"
+
+  # ─── ORDERS ─────────────────────────────────────────────────────────────────
+  /orders:
+    get:
+      operationId: listOrders
+      tags: [orders]
+      summary: List orders (customer sees own orders; pump owner sees orders for their pump)
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Orders list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Order"
+
+    post:
+      operationId: createOrder
+      tags: [orders]
+      summary: Place a new fuel delivery order (customer only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderInput"
+      responses:
+        "201":
+          description: Order placed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+        "400":
+          description: Invalid order
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /orders/{id}:
+    get:
+      operationId: getOrder
+      tags: [orders]
+      summary: Get order details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Order details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+        "404":
+          description: Order not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /orders/{id}/status:
+    patch:
+      operationId: updateOrderStatus
+      tags: [orders]
+      summary: Update order status (pump owner only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderStatusUpdate"
+      responses:
+        "200":
+          description: Status updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+        "400":
+          description: Invalid status transition
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Order not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /orders/{id}/cancel:
+    patch:
+      operationId: cancelOrder
+      tags: [orders]
+      summary: Cancel an order (customer can cancel pending orders)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Order cancelled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+        "400":
+          description: Cannot cancel at this stage
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  # ─── REVIEWS ────────────────────────────────────────────────────────────────
+  /pumps/{pumpId}/reviews:
+    get:
+      operationId: getPumpReviews
+      tags: [reviews]
+      summary: Get reviews for a pump
+      parameters:
+        - name: pumpId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Reviews list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Review"
+
+    post:
+      operationId: createReview
+      tags: [reviews]
+      summary: Submit a review for a pump
+      parameters:
+        - name: pumpId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReviewInput"
+      responses:
+        "201":
+          description: Review submitted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Review"
+        "400":
+          description: Invalid review or already reviewed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  # ─── ADMIN ──────────────────────────────────────────────────────────────────
+  /admin/login:
+    post:
+      operationId: adminLogin
+      tags: [admin]
+      summary: Admin login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminLoginCredentials"
+      responses:
+        "200":
+          description: Admin login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /admin/stats:
+    get:
+      operationId: getAdminStats
+      tags: [admin]
+      summary: Get platform-wide stats for admin dashboard
+      responses:
+        "200":
+          description: Admin dashboard statistics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminStats"
+
+  /admin/pumps:
+    get:
+      operationId: adminListPumps
+      tags: [admin]
+      summary: Admin - list all pumps (approved and pending)
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: All pumps
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PetrolPump"
+
+  /admin/pumps/{id}/approve:
+    patch:
+      operationId: approvePump
+      tags: [admin]
+      summary: Admin - approve a pending petrol pump
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Pump approved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PetrolPump"
+
+  /admin/pumps/{id}/reject:
+    patch:
+      operationId: rejectPump
+      tags: [admin]
+      summary: Admin - reject a pending petrol pump
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RejectionInput"
+      responses:
+        "200":
+          description: Pump rejected
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PetrolPump"
+
+  /admin/users:
+    get:
+      operationId: adminListUsers
+      tags: [admin]
+      summary: Admin - list all users
+      parameters:
+        - name: role
+          in: query
+          schema:
+            type: string
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: All users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserProfile"
+
+  /admin/orders:
+    get:
+      operationId: adminListOrders
+      tags: [admin]
+      summary: Admin - list all orders across the platform
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: pumpId
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: All orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Order"
+
+  /admin/users/{id}/suspend:
+    patch:
+      operationId: suspendUser
+      tags: [admin]
+      summary: Admin - suspend a user account
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: User suspended
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile"
+
+# ─── SCHEMAS ─────────────────────────────────────────────────────────────────
 components:
   schemas:
     HealthStatus:
@@ -31,6 +761,477 @@ components:
       properties:
         status:
           type: string
-      required:
-        - status
+      required: [status]
 
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required: [error]
+
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+      required: [success]
+
+    # ── Auth ────────────────────────────────────────────────────────────────
+    CustomerRegistration:
+      type: object
+      required: [fullName, phone, password, confirmPassword]
+      properties:
+        fullName:
+          type: string
+        phone:
+          type: string
+        email:
+          type: ["string", "null"]
+        password:
+          type: string
+        confirmPassword:
+          type: string
+        address:
+          type: ["string", "null"]
+        latitude:
+          type: ["number", "null"]
+        longitude:
+          type: ["number", "null"]
+
+    PumpRegistration:
+      type: object
+      required: [businessName, ownerName, phone, email, password, confirmPassword, cnic, licenseNumber, businessRegNumber, address]
+      properties:
+        businessName:
+          type: string
+        ownerName:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        confirmPassword:
+          type: string
+        cnic:
+          type: string
+        licenseNumber:
+          type: string
+        businessRegNumber:
+          type: string
+        address:
+          type: string
+        latitude:
+          type: ["number", "null"]
+        longitude:
+          type: ["number", "null"]
+        operatingHoursStart:
+          type: ["string", "null"]
+        operatingHoursEnd:
+          type: ["string", "null"]
+        deliveryRadius:
+          type: ["number", "null"]
+        deliveryCharges:
+          type: ["number", "null"]
+        description:
+          type: ["string", "null"]
+
+    LoginCredentials:
+      type: object
+      required: [phone, password, role]
+      properties:
+        phone:
+          type: string
+        password:
+          type: string
+        role:
+          type: string
+          enum: [customer, pump_owner]
+
+    AdminLoginCredentials:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+
+    AuthResponse:
+      type: object
+      required: [token, user]
+      properties:
+        token:
+          type: string
+        user:
+          $ref: "#/components/schemas/UserProfile"
+
+    # ── User ────────────────────────────────────────────────────────────────
+    UserProfile:
+      type: object
+      required: [id, role, fullName, phone, status, createdAt]
+      properties:
+        id:
+          type: integer
+        role:
+          type: string
+          enum: [customer, pump_owner, admin]
+        fullName:
+          type: string
+        phone:
+          type: string
+        email:
+          type: ["string", "null"]
+        profilePicture:
+          type: ["string", "null"]
+        address:
+          type: ["string", "null"]
+        latitude:
+          type: ["number", "null"]
+        longitude:
+          type: ["number", "null"]
+        status:
+          type: string
+          enum: [active, suspended]
+        createdAt:
+          type: string
+
+    Customer:
+      type: object
+      required: [id, fullName, phone, status, createdAt]
+      properties:
+        id:
+          type: integer
+        fullName:
+          type: string
+        phone:
+          type: string
+        email:
+          type: ["string", "null"]
+        profilePicture:
+          type: ["string", "null"]
+        address:
+          type: ["string", "null"]
+        latitude:
+          type: ["number", "null"]
+        longitude:
+          type: ["number", "null"]
+        status:
+          type: string
+        createdAt:
+          type: string
+
+    CustomerProfileUpdate:
+      type: object
+      properties:
+        fullName:
+          type: string
+        email:
+          type: string
+        address:
+          type: string
+        latitude:
+          type: number
+        longitude:
+          type: number
+        profilePicture:
+          type: string
+
+    FavoriteInput:
+      type: object
+      required: [pumpId]
+      properties:
+        pumpId:
+          type: integer
+
+    # ── Pump ────────────────────────────────────────────────────────────────
+    PetrolPump:
+      type: object
+      required: [id, businessName, ownerName, phone, address, status, createdAt]
+      properties:
+        id:
+          type: integer
+        ownerId:
+          type: integer
+        businessName:
+          type: string
+        ownerName:
+          type: string
+        phone:
+          type: string
+        email:
+          type: ["string", "null"]
+        address:
+          type: string
+        latitude:
+          type: ["number", "null"]
+        longitude:
+          type: ["number", "null"]
+        operatingHoursStart:
+          type: ["string", "null"]
+        operatingHoursEnd:
+          type: ["string", "null"]
+        deliveryRadius:
+          type: ["number", "null"]
+        deliveryCharges:
+          type: ["number", "null"]
+        description:
+          type: ["string", "null"]
+        logoUrl:
+          type: ["string", "null"]
+        status:
+          type: string
+          enum: [pending, approved, rejected, suspended]
+        rejectionReason:
+          type: ["string", "null"]
+        averageRating:
+          type: ["number", "null"]
+        totalReviews:
+          type: ["integer", "null"]
+        isOpen:
+          type: ["boolean", "null"]
+        fuelPrices:
+          type: array
+          items:
+            $ref: "#/components/schemas/FuelPrice"
+        createdAt:
+          type: string
+
+    PumpProfileUpdate:
+      type: object
+      properties:
+        businessName:
+          type: string
+        description:
+          type: string
+        address:
+          type: string
+        latitude:
+          type: number
+        longitude:
+          type: number
+        operatingHoursStart:
+          type: string
+        operatingHoursEnd:
+          type: string
+        deliveryRadius:
+          type: number
+        deliveryCharges:
+          type: number
+        logoUrl:
+          type: string
+        isOpen:
+          type: boolean
+
+    PumpStats:
+      type: object
+      required: [todayOrders, pendingOrders, completedOrders, cancelledOrders, todayRevenue, totalRevenue, totalCustomers]
+      properties:
+        todayOrders:
+          type: integer
+        pendingOrders:
+          type: integer
+        completedOrders:
+          type: integer
+        cancelledOrders:
+          type: integer
+        todayRevenue:
+          type: number
+        totalRevenue:
+          type: number
+        totalCustomers:
+          type: integer
+        recentOrders:
+          type: array
+          items:
+            $ref: "#/components/schemas/Order"
+
+    # ── Fuel ────────────────────────────────────────────────────────────────
+    FuelPrice:
+      type: object
+      required: [id, pumpId, fuelType, pricePerLiter, isAvailable]
+      properties:
+        id:
+          type: integer
+        pumpId:
+          type: integer
+        fuelType:
+          type: string
+          enum: [petrol, diesel, hi_octane]
+        pricePerLiter:
+          type: number
+        isAvailable:
+          type: boolean
+        updatedAt:
+          type: string
+
+    FuelPriceEntry:
+      type: object
+      required: [fuelType, pricePerLiter, isAvailable]
+      properties:
+        fuelType:
+          type: string
+          enum: [petrol, diesel, hi_octane]
+        pricePerLiter:
+          type: number
+        isAvailable:
+          type: boolean
+
+    FuelPricesUpdate:
+      type: object
+      required: [prices]
+      properties:
+        prices:
+          type: array
+          items:
+            $ref: "#/components/schemas/FuelPriceEntry"
+
+    # ── Orders ──────────────────────────────────────────────────────────────
+    OrderInput:
+      type: object
+      required: [pumpId, fuelType, quantityLiters, deliveryAddress]
+      properties:
+        pumpId:
+          type: integer
+        fuelType:
+          type: string
+          enum: [petrol, diesel, hi_octane]
+        quantityLiters:
+          type: number
+        deliveryAddress:
+          type: string
+        deliveryLat:
+          type: ["number", "null"]
+        deliveryLng:
+          type: ["number", "null"]
+        notes:
+          type: ["string", "null"]
+
+    OrderStatusUpdate:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [accepted, rejected, preparing, out_for_delivery, delivered, cancelled]
+        notes:
+          type: ["string", "null"]
+
+    Order:
+      type: object
+      required: [id, customerId, pumpId, fuelType, quantityLiters, pricePerLiter, deliveryCharges, totalAmount, status, deliveryAddress, createdAt]
+      properties:
+        id:
+          type: integer
+        customerId:
+          type: integer
+        pumpId:
+          type: integer
+        fuelType:
+          type: string
+          enum: [petrol, diesel, hi_octane]
+        quantityLiters:
+          type: number
+        pricePerLiter:
+          type: number
+        deliveryCharges:
+          type: number
+        totalAmount:
+          type: number
+        status:
+          type: string
+          enum: [pending, accepted, rejected, preparing, out_for_delivery, delivered, cancelled]
+        deliveryAddress:
+          type: string
+        deliveryLat:
+          type: ["number", "null"]
+        deliveryLng:
+          type: ["number", "null"]
+        notes:
+          type: ["string", "null"]
+        statusNotes:
+          type: ["string", "null"]
+        estimatedDelivery:
+          type: ["string", "null"]
+        customerName:
+          type: ["string", "null"]
+        customerPhone:
+          type: ["string", "null"]
+        pumpName:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+
+    # ── Reviews ─────────────────────────────────────────────────────────────
+    ReviewInput:
+      type: object
+      required: [rating, orderId]
+      properties:
+        orderId:
+          type: integer
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+        comment:
+          type: ["string", "null"]
+
+    Review:
+      type: object
+      required: [id, pumpId, customerId, rating, createdAt]
+      properties:
+        id:
+          type: integer
+        pumpId:
+          type: integer
+        customerId:
+          type: integer
+        orderId:
+          type: integer
+        rating:
+          type: integer
+        comment:
+          type: ["string", "null"]
+        customerName:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    # ── Admin ────────────────────────────────────────────────────────────────
+    AdminStats:
+      type: object
+      required: [totalUsers, totalPumps, pendingPumps, totalOrders, totalRevenue, todayOrders, activeOrders]
+      properties:
+        totalUsers:
+          type: integer
+        totalPumps:
+          type: integer
+        pendingPumps:
+          type: integer
+        approvedPumps:
+          type: integer
+        totalOrders:
+          type: integer
+        totalRevenue:
+          type: number
+        todayOrders:
+          type: integer
+        activeOrders:
+          type: integer
+        recentOrders:
+          type: array
+          items:
+            $ref: "#/components/schemas/Order"
+
+    RejectionInput:
+      type: object
+      required: [reason]
+      properties:
+        reason:
+          type: string
