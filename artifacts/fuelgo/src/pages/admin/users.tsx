@@ -29,7 +29,7 @@ export default function AdminUsers() {
         queryClient.invalidateQueries({ queryKey: getAdminListUsersQueryKey() });
         toast({ title: updated.status === "suspended" ? "User Suspended" : "User Reactivated" });
       },
-      onError: (err: any) => { toast({ title: "Error", description: err?.response?.data?.error || "Failed", variant: "destructive" }); },
+      onError: (err: any) => { toast({ title: "Error", description: err?.data?.error || "Failed", variant: "destructive" }); },
     });
   };
 

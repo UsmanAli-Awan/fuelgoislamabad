@@ -44,7 +44,7 @@ export default function PumpOrderDetail({ id }: { id: string }) {
           toast({ title: "Status Updated", description: `Order marked as ${status}` });
         },
         onError: (err: any) => {
-          toast({ title: "Error", description: err?.response?.data?.error || "Failed to update status", variant: "destructive" });
+          toast({ title: "Error", description: err?.data?.error || "Failed to update status", variant: "destructive" });
         },
       }
     );

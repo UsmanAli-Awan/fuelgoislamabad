@@ -35,7 +35,7 @@ export default function CustomerOrders() {
         queryClient.invalidateQueries({ queryKey: getListOrdersQueryKey() });
         toast({ title: "Order Cancelled" });
       },
-      onError: (err: any) => toast({ title: "Error", description: err?.response?.data?.error || "Cannot cancel", variant: "destructive" }),
+      onError: (err: any) => toast({ title: "Error", description: err?.data?.error || "Cannot cancel", variant: "destructive" }),
     });
   };
 

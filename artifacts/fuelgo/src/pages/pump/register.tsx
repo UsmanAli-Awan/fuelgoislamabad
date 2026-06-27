@@ -52,7 +52,7 @@ export default function PumpRegister() {
           setLocation("/pump/pending");
         },
         onError: (err: any) => {
-          toast({ title: "Registration Failed", description: err?.response?.data?.error || "Something went wrong", variant: "destructive" });
+          toast({ title: "Registration Failed", description: err?.data?.error || "Something went wrong", variant: "destructive" });
         },
       }
     );

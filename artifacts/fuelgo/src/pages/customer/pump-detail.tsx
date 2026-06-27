@@ -76,7 +76,7 @@ export default function CustomerPumpDetail({ id }: { id: string }) {
           setLocation("/customer/orders");
         },
         onError: (err: any) => {
-          toast({ title: "Order Failed", description: err?.response?.data?.error || "Something went wrong", variant: "destructive" });
+          toast({ title: "Order Failed", description: err?.data?.error || "Something went wrong", variant: "destructive" });
         },
       }
     );

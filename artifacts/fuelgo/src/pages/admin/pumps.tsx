@@ -39,7 +39,7 @@ export default function AdminPumps() {
   const handleApprove = (id: number) => {
     approveMutation.mutate({ id }, {
       onSuccess: () => { invalidate(); toast({ title: "Pump Approved", description: "Pump is now live on FuelGo" }); },
-      onError: (err: any) => { toast({ title: "Error", description: err?.response?.data?.error || "Failed", variant: "destructive" }); },
+      onError: (err: any) => { toast({ title: "Error", description: err?.data?.error || "Failed", variant: "destructive" }); },
     });
   };
 
@@ -47,7 +47,7 @@ export default function AdminPumps() {
     if (!rejectReason.trim()) { toast({ title: "Reason Required", description: "Provide a rejection reason", variant: "destructive" }); return; }
     rejectMutation.mutate({ id, data: { reason: rejectReason } }, {
       onSuccess: () => { invalidate(); setRejectingId(null); setRejectReason(""); toast({ title: "Pump Rejected" }); },
-      onError: (err: any) => { toast({ title: "Error", description: err?.response?.data?.error || "Failed", variant: "destructive" }); },
+      onError: (err: any) => { toast({ title: "Error", description: err?.data?.error || "Failed", variant: "destructive" }); },
     });
   };
 

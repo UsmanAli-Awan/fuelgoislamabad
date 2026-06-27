@@ -39,7 +39,7 @@ export default function CustomerRegister() {
           setLocation("/customer/home");
         },
         onError: (err: any) => {
-          toast({ title: "Registration Failed", description: err?.response?.data?.error || "Something went wrong", variant: "destructive" });
+          toast({ title: "Registration Failed", description: err?.data?.error || "Something went wrong", variant: "destructive" });
         },
       }
     );

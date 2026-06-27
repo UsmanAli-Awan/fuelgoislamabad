@@ -36,7 +36,7 @@ export default function AdminLogin() {
           setLocation("/admin/dashboard");
         },
         onError: (err: any) => {
-          toast({ title: "Login Failed", description: err?.response?.data?.error || "Invalid credentials", variant: "destructive" });
+          toast({ title: "Login Failed", description: err?.data?.error || "Invalid credentials", variant: "destructive" });
         },
       }
     );

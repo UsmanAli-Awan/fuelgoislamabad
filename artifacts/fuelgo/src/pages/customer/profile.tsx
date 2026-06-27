@@ -49,7 +49,7 @@ export default function CustomerProfile() {
           toast({ title: "Profile Updated", description: "Your changes have been saved" });
         },
         onError: (err: any) => {
-          toast({ title: "Error", description: err?.response?.data?.error || "Failed to save", variant: "destructive" });
+          toast({ title: "Error", description: err?.data?.error || "Failed to save", variant: "destructive" });
         },
       }
     );

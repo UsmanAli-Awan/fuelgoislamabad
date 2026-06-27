@@ -62,7 +62,7 @@ export default function PumpFuel() {
           toast({ title: "Prices Updated", description: "Fuel prices saved successfully" });
         },
         onError: (err: any) => {
-          toast({ title: "Error", description: err?.response?.data?.error || "Failed to save", variant: "destructive" });
+          toast({ title: "Error", description: err?.data?.error || "Failed to save", variant: "destructive" });
         },
       }
     );

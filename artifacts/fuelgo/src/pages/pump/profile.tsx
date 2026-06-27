@@ -66,7 +66,7 @@ export default function PumpProfile() {
           toast({ title: "Profile Updated", description: "Changes saved successfully" });
         },
         onError: (err: any) => {
-          toast({ title: "Error", description: err?.response?.data?.error || "Failed to save", variant: "destructive" });
+          toast({ title: "Error", description: err?.data?.error || "Failed to save", variant: "destructive" });
         },
       }
     );

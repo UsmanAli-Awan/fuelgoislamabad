@@ -35,7 +35,7 @@ export default function PumpLogin() {
           setLocation("/pump/dashboard");
         },
         onError: (err: any) => {
-          toast({ title: "Login Failed", description: err?.response?.data?.error || "Invalid credentials", variant: "destructive" });
+          toast({ title: "Login Failed", description: err?.data?.error || "Invalid credentials", variant: "destructive" });
         },
       }
     );
