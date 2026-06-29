@@ -35,6 +35,10 @@ export interface Order {
   customerPhone?: string | null;
   /** @nullable */
   pumpName?: string | null;
+  /** @nullable */
+  pumpLat?: number | null;
+  /** @nullable */
+  pumpLng?: number | null;
   createdAt: string;
   updatedAt?: string;
 }

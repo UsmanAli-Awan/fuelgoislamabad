@@ -14,6 +14,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/lib/auth";
 import { toast } from "@/hooks/use-toast";
 import { ArrowLeft, MapPin, Clock, Star, Heart, Fuel, Truck, ShoppingCart } from "lucide-react";
+import { LocationPicker, type PickedLocation } from "@/components/location-picker";
 
 const FUEL_LABELS: Record<string, string> = { petrol: "Petrol", diesel: "Diesel", hi_octane: "Hi-Octane" };
 
@@ -36,7 +37,9 @@ export default function CustomerPumpDetail({ id }: { id: string }) {
   const [ordering, setOrdering] = useState(false);
   const [fuelType, setFuelType] = useState("");
   const [quantity, setQuantity] = useState(5);
-  const [deliveryAddress, setDeliveryAddress] = useState(user?.address || "");
+  const [pickedLocation, setPickedLocation] = useState<PickedLocation | null>(
+    user?.address ? null : null
+  );
   const [notes, setNotes] = useState("");
 
   const toggleFavorite = () => {
@@ -63,12 +66,22 @@ export default function CustomerPumpDetail({ id }: { id: string }) {
   const totalAmount = (pricePerLiter * quantity) + deliveryCharges;
 
   const handlePlaceOrder = () => {
-    if (!fuelType || !quantity || !deliveryAddress) {
-      toast({ title: "Missing Info", description: "Select fuel type, quantity and delivery address", variant: "destructive" });
+    if (!fuelType || !quantity || !pickedLocation) {
+      toast({ title: "Missing Info", description: "Select fuel type, quantity and drop a pin on the map", variant: "destructive" });
       return;
     }
     createOrder.mutate(
-      { data: { pumpId, fuelType, quantityLiters: quantity, deliveryAddress, notes: notes || undefined } },
+      {
+        data: {
+          pumpId,
+          fuelType: fuelType as 'petrol' | 'diesel' | 'hi_octane',
+          quantityLiters: quantity,
+          deliveryAddress: pickedLocation.address,
+          deliveryLat: pickedLocation.lat,
+          deliveryLng: pickedLocation.lng,
+          notes: notes || undefined,
+        }
+      },
       {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: getListOrdersQueryKey() });
@@ -159,7 +172,7 @@ export default function CustomerPumpDetail({ id }: { id: string }) {
       ) : (
         <Card>
           <CardHeader className="pb-2"><CardTitle className="text-base">Place Order</CardTitle></CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="space-y-4">
             <div>
               <Label>Fuel Type</Label>
               <Select value={fuelType} onValueChange={setFuelType}>
@@ -173,18 +186,24 @@ export default function CustomerPumpDetail({ id }: { id: string }) {
                 </SelectContent>
               </Select>
             </div>
+
             <div>
               <Label>Quantity (Liters)</Label>
-              <Input type="number" min={1} max={200} value={quantity} onChange={e => setQuantity(parseInt(e.target.value) || 1)} data-testid="input-quantity" />
+              <Input
+                type="number" min={1} max={200}
+                value={quantity}
+                onChange={e => setQuantity(parseInt(e.target.value) || 1)}
+                data-testid="input-quantity"
+              />
             </div>
-            <div>
-              <Label>Delivery Address</Label>
-              <Input value={deliveryAddress} onChange={e => setDeliveryAddress(e.target.value)} placeholder="Enter your delivery address" data-testid="input-delivery-address" />
-            </div>
+
+            <LocationPicker value={pickedLocation} onChange={setPickedLocation} />
+
             <div>
               <Label>Notes (Optional)</Label>
               <Input value={notes} onChange={e => setNotes(e.target.value)} placeholder="Any special instructions..." data-testid="input-notes" />
             </div>
+
             {fuelType && (
               <div className="bg-muted rounded-lg p-3 space-y-1 text-sm">
                 <div className="flex justify-between"><span>{FUEL_LABELS[fuelType]}</span><span>PKR {pricePerLiter} × {quantity}L</span></div>
@@ -192,6 +211,7 @@ export default function CustomerPumpDetail({ id }: { id: string }) {
                 <div className="flex justify-between font-bold border-t pt-1"><span>Total</span><span>PKR {totalAmount.toFixed(2)}</span></div>
               </div>
             )}
+
             <div className="flex gap-2">
               <Button variant="outline" className="flex-1" onClick={() => setOrdering(false)}>Cancel</Button>
               <Button className="flex-1" disabled={createOrder.isPending} onClick={handlePlaceOrder} data-testid="button-confirm-order">

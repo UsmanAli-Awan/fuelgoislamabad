@@ -113,7 +113,7 @@ export default function PumpOrderDetail({ id }: { id: string }) {
       )}
 
       <p className="text-xs text-muted-foreground text-center">
-        Placed {new Date(order.createdAt).toLocaleString()} · Updated {new Date(order.updatedAt).toLocaleString()}
+        Placed {new Date(order.createdAt).toLocaleString()} · Updated {order.updatedAt ? new Date(order.updatedAt).toLocaleString() : '—'}
       </p>
     </div>
   );

@@ -52,7 +52,7 @@ export default function PumpProfile() {
         deliveryCharges: pump.deliveryCharges || 0,
         operatingHoursStart: pump.operatingHoursStart || "06:00",
         operatingHoursEnd: pump.operatingHoursEnd || "23:00",
-        isOpen: pump.isOpen,
+        isOpen: pump.isOpen ?? true,
       });
     }
   }, [pump]);

@@ -19,7 +19,7 @@ const FUEL_LABELS: Record<string, string> = { petrol: "Petrol", diesel: "Diesel"
 
 export default function AdminOrders() {
   const [, setLocation] = useLocation();
-  const { data: orders = [], isLoading } = useAdminListOrders({ query: { queryKey: getAdminListOrdersQueryKey() } });
+  const { data: orders = [], isLoading } = useAdminListOrders();
 
   return (
     <div className="max-w-4xl mx-auto p-4 space-y-4">

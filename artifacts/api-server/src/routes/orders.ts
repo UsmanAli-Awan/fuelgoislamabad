@@ -9,7 +9,9 @@ function buildOrderResponse(
   order: typeof ordersTable.$inferSelect,
   customerName?: string | null,
   customerPhone?: string | null,
-  pumpName?: string | null
+  pumpName?: string | null,
+  pumpLat?: string | null,
+  pumpLng?: string | null,
 ) {
   return {
     id: order.id,
@@ -30,6 +32,8 @@ function buildOrderResponse(
     customerName: customerName || null,
     customerPhone: customerPhone || null,
     pumpName: pumpName || null,
+    pumpLat: pumpLat ? parseFloat(pumpLat) : null,
+    pumpLng: pumpLng ? parseFloat(pumpLng) : null,
     createdAt: order.createdAt.toISOString(),
     updatedAt: order.updatedAt.toISOString(),
   };
@@ -74,7 +78,7 @@ router.get("/orders", requireAuth, async (req, res): Promise<void> => {
   const result = await Promise.all(allOrders.map(async (order) => {
     const [customer] = await db.select().from(usersTable).where(eq(usersTable.id, order.customerId));
     const [pump] = await db.select().from(petrolPumpsTable).where(eq(petrolPumpsTable.id, order.pumpId));
-    return buildOrderResponse(order, customer?.fullName, customer?.phone, pump?.businessName);
+    return buildOrderResponse(order, customer?.fullName, customer?.phone, pump?.businessName, pump?.latitude, pump?.longitude);
   }));
 
   res.json(result);
@@ -159,7 +163,7 @@ router.get("/orders/:id", requireAuth, async (req, res): Promise<void> => {
 
   const [customer] = await db.select().from(usersTable).where(eq(usersTable.id, order.customerId));
   const [pump] = await db.select().from(petrolPumpsTable).where(eq(petrolPumpsTable.id, order.pumpId));
-  res.json(buildOrderResponse(order, customer?.fullName, customer?.phone, pump?.businessName));
+  res.json(buildOrderResponse(order, customer?.fullName, customer?.phone, pump?.businessName, pump?.latitude, pump?.longitude));
 });
 
 router.patch("/orders/:id/status", requireRole("pump_owner"), async (req, res): Promise<void> => {
@@ -197,7 +201,7 @@ router.patch("/orders/:id/status", requireRole("pump_owner"), async (req, res): 
     .returning();
 
   const [customer] = await db.select().from(usersTable).where(eq(usersTable.id, updated.customerId));
-  res.json(buildOrderResponse(updated, customer?.fullName, customer?.phone, pump.businessName));
+  res.json(buildOrderResponse(updated, customer?.fullName, customer?.phone, pump.businessName, pump.latitude, pump.longitude));
 });
 
 router.patch("/orders/:id/cancel", requireRole("customer"), async (req, res): Promise<void> => {
@@ -233,7 +237,7 @@ router.patch("/orders/:id/cancel", requireRole("customer"), async (req, res): Pr
 
   const [pump] = await db.select().from(petrolPumpsTable).where(eq(petrolPumpsTable.id, order.pumpId));
   const [customer] = await db.select().from(usersTable).where(eq(usersTable.id, userId));
-  res.json(buildOrderResponse(updated, customer?.fullName, customer?.phone, pump?.businessName));
+  res.json(buildOrderResponse(updated, customer?.fullName, customer?.phone, pump?.businessName, pump?.latitude, pump?.longitude));
 });
 
 export default router;

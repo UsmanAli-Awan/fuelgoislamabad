@@ -42,7 +42,7 @@ export default function CustomerProfile() {
 
   const onSubmit = (values: z.infer<typeof schema>) => {
     updateMutation.mutate(
-      { data: { fullName: values.fullName, email: values.email || null, address: values.address || null } },
+      { data: { fullName: values.fullName, email: values.email || undefined, address: values.address || undefined } },
       {
         onSuccess: () => {
           queryClient.invalidateQueries();

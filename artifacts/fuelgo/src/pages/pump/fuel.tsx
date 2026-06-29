@@ -55,7 +55,7 @@ export default function PumpFuel() {
   const handleSave = () => {
     if (!pumpId) return;
     updateMutation.mutate(
-      { pumpId, data: { prices: entries } },
+      { pumpId, data: { prices: entries as any } },
       {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: getGetPumpFuelPricesQueryKey(pumpId) });

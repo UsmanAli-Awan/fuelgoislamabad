@@ -10,11 +10,7 @@ import { Link } from "wouter";
 export default function CustomerHome() {
   const [search, setSearch] = useState("");
 
-  const { data: pumps, isLoading } = useListPumps({
-    query: {
-      queryKey: getListPumpsQueryKey({ search }),
-    }
-  });
+  const { data: pumps, isLoading } = useListPumps({ search });
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">

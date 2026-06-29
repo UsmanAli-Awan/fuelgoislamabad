@@ -430,6 +430,8 @@ export const GetMyPumpStatsResponse = zod.object({
   "customerName": zod.string().nullish(),
   "customerPhone": zod.string().nullish(),
   "pumpName": zod.string().nullish(),
+  "pumpLat": zod.number().nullish(),
+  "pumpLng": zod.number().nullish(),
   "createdAt": zod.string(),
   "updatedAt": zod.string().optional()
 })).optional()
@@ -508,6 +510,8 @@ export const ListOrdersResponseItem = zod.object({
   "customerName": zod.string().nullish(),
   "customerPhone": zod.string().nullish(),
   "pumpName": zod.string().nullish(),
+  "pumpLat": zod.number().nullish(),
+  "pumpLng": zod.number().nullish(),
   "createdAt": zod.string(),
   "updatedAt": zod.string().optional()
 })
@@ -546,6 +550,8 @@ export const CreateOrderResponse = zod.object({
   "customerName": zod.string().nullish(),
   "customerPhone": zod.string().nullish(),
   "pumpName": zod.string().nullish(),
+  "pumpLat": zod.number().nullish(),
+  "pumpLng": zod.number().nullish(),
   "createdAt": zod.string(),
   "updatedAt": zod.string().optional()
 })
@@ -577,6 +583,8 @@ export const GetOrderResponse = zod.object({
   "customerName": zod.string().nullish(),
   "customerPhone": zod.string().nullish(),
   "pumpName": zod.string().nullish(),
+  "pumpLat": zod.number().nullish(),
+  "pumpLng": zod.number().nullish(),
   "createdAt": zod.string(),
   "updatedAt": zod.string().optional()
 })
@@ -613,6 +621,8 @@ export const UpdateOrderStatusResponse = zod.object({
   "customerName": zod.string().nullish(),
   "customerPhone": zod.string().nullish(),
   "pumpName": zod.string().nullish(),
+  "pumpLat": zod.number().nullish(),
+  "pumpLng": zod.number().nullish(),
   "createdAt": zod.string(),
   "updatedAt": zod.string().optional()
 })
@@ -644,6 +654,8 @@ export const CancelOrderResponse = zod.object({
   "customerName": zod.string().nullish(),
   "customerPhone": zod.string().nullish(),
   "pumpName": zod.string().nullish(),
+  "pumpLat": zod.number().nullish(),
+  "pumpLng": zod.number().nullish(),
   "createdAt": zod.string(),
   "updatedAt": zod.string().optional()
 })
@@ -755,6 +767,8 @@ export const GetAdminStatsResponse = zod.object({
   "customerName": zod.string().nullish(),
   "customerPhone": zod.string().nullish(),
   "pumpName": zod.string().nullish(),
+  "pumpLat": zod.number().nullish(),
+  "pumpLng": zod.number().nullish(),
   "createdAt": zod.string(),
   "updatedAt": zod.string().optional()
 })).optional()
@@ -937,6 +951,8 @@ export const AdminListOrdersResponseItem = zod.object({
   "customerName": zod.string().nullish(),
   "customerPhone": zod.string().nullish(),
   "pumpName": zod.string().nullish(),
+  "pumpLat": zod.number().nullish(),
+  "pumpLng": zod.number().nullish(),
   "createdAt": zod.string(),
   "updatedAt": zod.string().optional()
 })

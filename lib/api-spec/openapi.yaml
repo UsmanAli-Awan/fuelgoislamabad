@@ -1163,6 +1163,10 @@ components:
           type: ["string", "null"]
         pumpName:
           type: ["string", "null"]
+        pumpLat:
+          type: ["number", "null"]
+        pumpLng:
+          type: ["number", "null"]
         createdAt:
           type: string
         updatedAt:
