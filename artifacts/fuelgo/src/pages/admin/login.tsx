@@ -4,17 +4,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useAdminLogin } from "@workspace/api-client-react";
 import { useAuth } from "@/lib/auth";
 import { toast } from "@/hooks/use-toast";
-import { Shield, ArrowLeft } from "lucide-react";
-import { Link } from "wouter";
+import { Fuel, Lock, User } from "lucide-react";
 
 const schema = z.object({
-  email: z.string().email("Enter a valid email"),
-  password: z.string().min(6, "Password is required"),
+  username: z.string().min(1, "Username is required"),
+  password: z.string().min(1, "Password is required"),
 });
 
 export default function AdminLogin() {
@@ -24,12 +22,12 @@ export default function AdminLogin() {
 
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
-    defaultValues: { email: "", password: "" },
+    defaultValues: { username: "", password: "" },
   });
 
   const onSubmit = (values: z.infer<typeof schema>) => {
     mutation.mutate(
-      { data: { email: values.email, password: values.password } },
+      { data: { email: values.username, password: values.password } },
       {
         onSuccess: (data) => {
           login(data.token);
@@ -43,44 +41,79 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 mx-auto mb-3">
-            <Shield className="w-6 h-6 text-primary" />
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-orange-50 via-white to-orange-50 p-4">
+      <div className="w-full max-w-sm space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className="text-center space-y-3">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-primary shadow-lg shadow-primary/30 mx-auto">
+            <Fuel className="w-10 h-10 text-white" />
           </div>
-          <CardTitle className="text-2xl font-bold">Admin Portal</CardTitle>
-          <CardDescription>Sign in to manage FuelGo Islamabad</CardDescription>
-        </CardHeader>
-        <CardContent>
+          <div>
+            <h1 className="text-3xl font-black tracking-tight text-foreground">FuelGo</h1>
+            <p className="text-muted-foreground text-sm font-medium mt-1">Admin Control Panel</p>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-3xl shadow-xl shadow-black/5 border border-border/50 p-6 space-y-5">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4" data-testid="form-admin-login">
-              <FormField control={form.control} name="email" render={({ field }) => (
+              <FormField control={form.control} name="username" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Admin Email</FormLabel>
-                  <FormControl><Input type="email" placeholder="admin@fuelgo.pk" data-testid="input-email" {...field} /></FormControl>
+                  <FormLabel className="text-sm font-semibold">Username</FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                      <Input
+                        className="pl-9 h-12 rounded-xl border-border/80 focus-visible:ring-primary/30"
+                        placeholder="Enter username"
+                        autoCapitalize="none"
+                        autoCorrect="off"
+                        data-testid="input-email"
+                        {...field}
+                      />
+                    </div>
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
+
               <FormField control={form.control} name="password" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl><Input type="password" placeholder="••••••••" data-testid="input-password" {...field} /></FormControl>
+                  <FormLabel className="text-sm font-semibold">Password</FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                      <Input
+                        type="password"
+                        className="pl-9 h-12 rounded-xl border-border/80 focus-visible:ring-primary/30"
+                        placeholder="••••••••"
+                        data-testid="input-password"
+                        {...field}
+                      />
+                    </div>
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
-              <Button type="submit" className="w-full" disabled={mutation.isPending} data-testid="button-admin-login">
-                {mutation.isPending ? "Signing In..." : "Sign In"}
+
+              <Button
+                type="submit"
+                className="w-full h-12 rounded-xl font-bold text-base shadow-md shadow-primary/30 hover:shadow-lg hover:shadow-primary/40 transition-all"
+                disabled={mutation.isPending}
+                data-testid="button-admin-login"
+              >
+                {mutation.isPending ? (
+                  <span className="flex items-center gap-2">
+                    <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                    Signing In…
+                  </span>
+                ) : "Sign In"}
               </Button>
             </form>
           </Form>
-        </CardContent>
-        <CardFooter className="justify-center">
-          <Link href="/" className="text-sm text-muted-foreground hover:underline flex items-center gap-1">
-            <ArrowLeft className="w-3 h-3" /> Back to Home
-          </Link>
-        </CardFooter>
-      </Card>
+        </div>
+
+        <p className="text-center text-xs text-muted-foreground">FuelGo Islamabad &copy; {new Date().getFullYear()}</p>
+      </div>
     </div>
   );
 }
