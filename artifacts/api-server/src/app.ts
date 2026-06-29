@@ -11,14 +11,14 @@ app.use(
   pinoHttp({
     logger,
     serializers: {
-      req(req) {
+     req(req: Request) {
         return {
           id: req.id,
           method: req.method,
           url: req.url?.split("?")[0],
         };
       },
-      res(res) {
+    res(res: Response) {
         return {
           statusCode: res.statusCode,
         };
@@ -33,18 +33,4 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api", router);
 
 export default app;
-serializers: {
-  req(req: IncomingMessage & { id?: string }) {
-    return {
-      id: req.id,
-      method: req.method,
-      url: req.url?.split("?")[0],
-    };
-  },
 
-  res(res: ServerResponse) {
-    return {
-      statusCode: res.statusCode,
-    };
-  },
-},
