@@ -3,6 +3,7 @@ import cors from "cors";
 import { pinoHttp } from "pino-http";
 import router from "./routes";
 import { logger } from "./lib/logger";
+import { IncomingMessage, ServerResponse } from "http";
 
 const app: Express = express();
 
@@ -32,3 +33,18 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api", router);
 
 export default app;
+serializers: {
+  req(req: IncomingMessage & { id?: string }) {
+    return {
+      id: req.id,
+      method: req.method,
+      url: req.url?.split("?")[0],
+    };
+  },
+
+  res(res: ServerResponse) {
+    return {
+      statusCode: res.statusCode,
+    };
+  },
+},
